@@ -46,6 +46,16 @@
 ![huizhi-multi-protocol-4](README.assets/4.png)
 ![huizhi-multi-protocol-5](README.assets/5.png)
 
+---
+
+## 系统演示
+
+管理后台：http://platform.protocol.huizhidata.com/
+
+账号：admin      密码：admin123
+
+---
+
 ### 技术架构
 
 前端采用 Vue 单页应用（SPA）架构：Vuex 管理全局状态，Vue Router 依据后端菜单动态生成路由，axios 统一封装请求并携带 Token；Element UI 提供组件体系，ECharts 支撑数据可视化。通过 .env 多环境配置与 devServer 代理可快速对接本地、测试、生产网关，构建产物由 Nginx 托管并反向代理后端接口。
@@ -159,14 +169,6 @@ npm run preview
 | .env.production | 生产环境 | /prod-api |
 
 VUE_APP_MP_API 为多协议模块接口前缀（默认 /mp-api），VUE_APP_TITLE 为页面标题（默认 witos开发平台）。
-
----
-
-## 系统演示
-
-管理后台：http://platform.protocol.huizhidata.com/
-
-账号：admin      密码：admin123
 
 ---
 
