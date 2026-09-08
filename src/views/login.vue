@@ -7,7 +7,7 @@
     <div class="login-left">
       <div class="illustration-content">
         <!-- 平台标题 -->
-        <div class="platform-title">witos开发平台</div>
+        <div class="platform-title">慧知开源充电桩多协议平台</div>
 
         <!-- 底部内容区域 -->
         <div class="bottom-content">
@@ -16,8 +16,8 @@
 
           <!-- 版权信息 -->
           <div class="login-footer">
-            <strong>版权所有 Copyright &copy; 2019-2025 &nbsp;
-              <a href="http://witos.doc.huizhidata.com/" target="_blank">witos开发平台</a>&nbsp;&nbsp;技术支持：witos开发平台
+            <strong>版权所有 Copyright &copy; 2019-2026 &nbsp;
+              <a href="http://witos.doc.huizhidata.com/" target="_blank">慧知开源充电桩多协议平台</a>&nbsp;&nbsp;技术支持：慧知开源充电桩多协议平台
             </strong>
           </div>
         </div>
@@ -28,7 +28,7 @@
     <div class="login-right">
       <div class="login-form-container">
         <div class="welcome-text">欢迎登录</div>
-        <div class="platform-name">witos开发平台</div>
+        <div class="platform-name">慧知开源充电桩多协议平台</div>
 
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
           <el-form-item prop="username">

@@ -27,27 +27,14 @@ export default {
 
 <style lang="scss" scoped>
 .app-main {
-  /* 50= navbar  50  */
-  background: #f3f7fa;
+  /* navbar 已固定在滚动区外，高度 50px；tags 也在 navbar 内 */
+  background: #f6f8fa;
   min-height: calc(100vh - 50px);
   width: 100%;
+  max-width: 100%;
   position: relative;
-  overflow: hidden;
-}
-
-.fixed-header + .app-main {
-  padding-top: 50px;
-}
-
-.hasTagsView {
-  .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    min-height: calc(100vh - 84px);
-  }
-
-  .fixed-header+.app-main {
-    padding-top: 84px;
-  }
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 </style>
 

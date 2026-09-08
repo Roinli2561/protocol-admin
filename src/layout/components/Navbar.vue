@@ -206,25 +206,35 @@ export default {
     }
 
     .avatar-container {
-      margin-right: 30px;
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      margin-right: 24px;
+      line-height: 1;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        display: inline-flex;
+        align-items: center;
         position: relative;
+        height: 100%;
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: block;
+          object-fit: cover;
+          vertical-align: middle;
         }
 
         .el-icon-caret-bottom {
           cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
+          position: static;
+          margin-left: 6px;
           font-size: 12px;
+          line-height: 1;
+          color: #5a5e66;
         }
       }
     }

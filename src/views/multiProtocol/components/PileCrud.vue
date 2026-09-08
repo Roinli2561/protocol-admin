@@ -1,167 +1,253 @@
 <template>
   <section class="pile-page">
     <div class="pile-summary">
-      <article class="summary-item summary-primary"><span class="summary-icon"><i class="el-icon-mobile-phone" /></span><div><strong>{{ total }}</strong><p>充电桩总数</p></div></article>
-      <article class="summary-item summary-success"><span class="summary-icon"><i class="el-icon-circle-check" /></span><div><strong>{{ onlineCount }}</strong><p>在线充电桩</p></div></article>
-      <article class="summary-item summary-charging"><span class="summary-icon"><i class="el-icon-lightning" /></span><div><strong>{{ chargingCount }}</strong><p>充电中</p></div></article>
-      <article class="summary-item summary-fault"><span class="summary-icon"><i class="el-icon-warning-outline" /></span><div><strong>{{ faultCount }}</strong><p>故障</p></div></article>
-      <article class="summary-item summary-protocol"><span class="summary-icon"><i class="el-icon-connection" /></span><div><strong>{{ protocolOptions.length }}<small>类</small></strong><p>接入协议</p></div></article>
-    </div>
-
-    <main class="pile-content">
-    <el-form
-      ref="queryForm"
-      :model="queryParams"
-      size="small"
-      :inline="true"
-      label-width="0"
-      class="query-form"
-    >
-      <el-form-item>
-        <el-input
-          v-model.trim="queryParams.pileName"
-          placeholder="请输入充电桩名称"
-          clearable
-          style="width: 220px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-input
-          v-model.trim="queryParams.pileCode"
-          placeholder="请输入充电桩编码"
-          clearable
-          style="width: 220px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-select
-          v-model="queryParams.stationId"
-          placeholder="请选择站点"
-          clearable
-          filterable
-          style="width: 220px"
-        >
-          <el-option
-            v-for="item in stationOptions"
-            :key="item.id"
-            :label="item.stationName || item.label"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select
-          v-model="queryParams.protocol"
-          placeholder="请选择协议类型"
-          clearable
-          filterable
-          style="width: 200px"
-        >
-          <el-option
-            v-for="item in protocolOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 140px">
-          <el-option
-            v-for="item in pileStatusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <div class="toolbar">
-      <div class="view-switch" aria-label="视图切换">
-        <el-tooltip content="表格视图" placement="top"><button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'"><i class="el-icon-tickets" /></button></el-tooltip>
-        <el-tooltip content="卡片视图" placement="top"><button :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'"><i class="el-icon-menu" /></button></el-tooltip>
-      </div>
-      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新建充电桩</el-button>
-    </div>
-
-    <div v-loading="loading" class="pile-list">
-      <div v-if="viewMode === 'card'" class="card-grid">
-        <article v-for="(pile, index) in cardPiles" :key="pile.id || pile.pileCode || index" class="pile-card">
-          <div class="pile-image"><img :src="pileImage" alt="充电桩" /></div>
-          <div class="pile-card-body">
-            <div class="pile-card-head"><h3 :title="pile.pileName">{{ pile.pileName || '未命名充电桩' }}</h3><div class="card-actions"><el-tooltip content="编辑" placement="top"><button class="edit" @click="handleUpdate(pile)"><i class="el-icon-edit" /></button></el-tooltip><el-tooltip content="删除" placement="top"><button class="delete" @click="handleDelete(pile)"><i class="el-icon-delete" /></button></el-tooltip></div></div>
-            <div class="pile-code"><span :class="['status-tag', pile.statusInfo.type]">{{ pile.statusInfo.label }}</span><b>{{ pile.pileCode || '-' }}</b></div>
-            <dl class="pile-details"><div><dt>所属站点</dt><dd :title="pile.stationName">{{ pile.stationName }}</dd></div><div><dt>厂商</dt><dd :title="pile.manufacturer || pile.brand">{{ pile.manufacturer || pile.brand || '-' }}</dd></div></dl>
-            <div class="pile-metrics"><div><strong>{{ pile.power }}</strong><span>额定功率(kW)</span></div><div><strong :title="pile.protocolLabel">{{ pile.protocolLabel }}</strong><span>协议类型</span></div></div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#0C65F5">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>充电桩总数</span>
           </div>
-        </article>
-        <div v-if="!loading && !cardPiles.length" class="empty-state">暂无充电桩数据</div>
+        </div>
+        <div class="topItemValue">{{ total }}</div>
       </div>
-
-      <el-table v-else :data="tableData" border height="100%">
-      <el-table-column label="序号" width="70" align="center">
-        <template slot-scope="scope">
-          <span>{{ (queryParams.page - 1) * queryParams.size + scope.$index + 1 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="充电桩名称" prop="pileName" min-width="180" show-overflow-tooltip />
-      <el-table-column label="充电桩编码" prop="pileCode" min-width="160" show-overflow-tooltip />
-      <el-table-column label="所属站点" min-width="180" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{ stationNameMap[scope.row.stationId] || scope.row.stationId }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="协议类型" min-width="140" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{ formatProtocol(scope.row.protocol) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" prop="type" width="90" align="center">
-        <template slot-scope="scope">
-          <el-tag size="mini">{{ formatPileType(scope.row.type) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="品牌" prop="brand" min-width="120" show-overflow-tooltip />
-      <el-table-column label="型号" prop="model" min-width="120" show-overflow-tooltip />
-      <el-table-column label="厂商" prop="manufacturer" min-width="140" show-overflow-tooltip />
-      <el-table-column label="状态" prop="status" width="100" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="getTableStatusType(scope.row, scope.$index)" size="mini">
-            {{ getCardStatus(null, scope.row.id || scope.row.pileCode || scope.$index).label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="枪数量" prop="gunCount" width="90" align="center" />
-      <el-table-column label="更新时间" prop="updatedTime" width="170" align="center">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updatedTime || scope.row.createdTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150" align="center" fixed="right">
-        <template slot-scope="scope">
-          <el-button type="text" size="mini" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-      </el-table>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#01CB76">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>在线充电桩</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ onlineCount }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#1890ff">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>充电中</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ chargingCount }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#f56c6c">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>故障</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ faultCount }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#6855FC">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>接入协议(类)</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ protocolOptions.length }}</div>
+      </div>
     </div>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.page"
-      :limit.sync="queryParams.size"
-      @pagination="getList"
-    />
+    <div class="content-box w100">
+      <div class="left">
+        <el-form ref="queryForm" :model="queryParams" class="search-form">
+          <div class="title">
+            <div class="flex">
+              <div class="labelCss">充电桩名称</div>
+              <el-input
+                class="inputCss"
+                v-model.trim="queryParams.pileName"
+                placeholder="请输入充电桩名称"
+                clearable
+                @keyup.enter.native="handleQuery"
+              />
+            </div>
+            <div class="flex m-l-20">
+              <div class="labelCss">充电桩编码</div>
+              <el-input
+                class="inputCss"
+                v-model.trim="queryParams.pileCode"
+                placeholder="请输入充电桩编码"
+                clearable
+                @keyup.enter.native="handleQuery"
+              />
+            </div>
+            <div class="flex m-l-20">
+              <div class="labelCss">所属站点</div>
+              <el-select
+                v-model="queryParams.stationId"
+                placeholder="请选择所属站点"
+                clearable
+                filterable
+              >
+                <el-option
+                  v-for="item in stationOptions"
+                  :key="item.id"
+                  :label="item.stationName || item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </div>
+          </div>
+          <div class="title m-t-20">
+            <div class="flex">
+              <div class="labelCss">协议类型</div>
+              <el-select
+                v-model="queryParams.protocol"
+                placeholder="请选择协议类型"
+                clearable
+                filterable
+              >
+                <el-option
+                  v-for="item in protocolOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+            <div class="flex m-l-20">
+              <div class="labelCss">状态</div>
+              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+                <el-option
+                  v-for="item in pileStatusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+          </div>
+        </el-form>
+      </div>
+      <div class="right2 m-l-20">
+        <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
+        <el-button type="normal" icon="el-icon-refresh" class="custom-grey-btn m-l-15" @click="resetQuery">重置</el-button>
+      </div>
+    </div>
 
-    </main>
+    <div class="table-box">
+      <div class="table-tools">
+        <div class="table-tools-left">
+          <el-button class="m-l-0" type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
+        </div>
+        <div class="table-tools-right">
+          <div class="view-switch" aria-label="视图切换">
+            <el-tooltip content="卡片视图" placement="top">
+              <button :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'"><i class="el-icon-s-grid" /> 卡片</button>
+            </el-tooltip>
+            <el-tooltip content="表格视图" placement="top">
+              <button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'"><i class="el-icon-s-operation" /> 列表</button>
+            </el-tooltip>
+          </div>
+        </div>
+      </div>
+
+      <div v-loading="loading" class="pile-list">
+        <div v-if="viewMode === 'card'" class="card-grid">
+          <article v-for="(pile, index) in cardPiles" :key="pile.id || pile.pileCode || index" class="pile-card">
+            <div class="pile-card__side">
+              <div class="pile-card__img-wrap">
+                <img :src="pileImage" class="pile-card__img" alt="充电桩" />
+              </div>
+              <span class="pile-card__status" :class="pile.statusInfo.type">{{ pile.statusInfo.label }}</span>
+            </div>
+            <div class="pile-card__content">
+              <div class="pile-card__head">
+                <div class="pile-card__name" :title="pile.pileName">{{ pile.pileName || '未命名充电桩' }}</div>
+                <div class="pile-card__addr">
+                  <i class="el-icon-office-building" />
+                  <span :title="pile.stationName">{{ pile.stationName || '未关联站点' }}</span>
+                </div>
+                <div class="pile-card__code">编码：{{ pile.pileCode || '-' }}</div>
+              </div>
+              <div class="pile-card__stats">
+                <div class="pile-card__stat">
+                  <span class="pile-card__stat-label">额定功率:</span>
+                  <span class="pile-card__stat-val">{{ pile.power }} kW</span>
+                </div>
+                <div class="pile-card__stat pile-card__stat--right">
+                  <span class="pile-card__stat-label">协议类型:</span>
+                  <span class="pile-card__stat-val" :title="pile.protocolLabel">{{ pile.protocolLabel }}</span>
+                </div>
+              </div>
+              <div class="pile-card__ops">
+                <el-button size="mini" plain @click="handleUpdate(pile)">编辑</el-button>
+                <el-button size="mini" plain @click="handleDelete(pile)">删除</el-button>
+              </div>
+            </div>
+          </article>
+          <div v-if="!loading && !cardPiles.length" class="empty-state"><p>暂无充电桩数据</p></div>
+        </div>
+
+        <div v-else class="table-wrapper">
+          <el-table :data="tableData" border>
+            <el-table-column label="序号" width="70" align="center">
+              <template slot-scope="scope">
+                <span>{{ (queryParams.page - 1) * queryParams.size + scope.$index + 1 }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="充电桩名称" prop="pileName" min-width="180" show-overflow-tooltip />
+            <el-table-column label="充电桩编码" prop="pileCode" min-width="160" show-overflow-tooltip />
+            <el-table-column label="所属站点" min-width="180" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <span>{{ stationNameMap[scope.row.stationId] || scope.row.stationId }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="协议类型" min-width="140" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <span>{{ formatProtocol(scope.row.protocol) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="类型" prop="type" width="90" align="center">
+              <template slot-scope="scope">
+                <el-tag size="mini">{{ formatPileType(scope.row.type) }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="品牌" prop="brand" min-width="120" show-overflow-tooltip />
+            <el-table-column label="型号" prop="model" min-width="120" show-overflow-tooltip />
+            <el-table-column label="厂商" prop="manufacturer" min-width="140" show-overflow-tooltip />
+            <el-table-column label="状态" prop="status" width="100" align="center">
+              <template slot-scope="scope">
+                <el-tag :type="getTableStatusType(scope.row, scope.$index)" size="mini">
+                  {{ getCardStatus(null, scope.row.id || scope.row.pileCode || scope.$index).label }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="枪数量" prop="gunCount" width="90" align="center" />
+            <el-table-column label="更新时间" prop="updatedTime" width="170" align="center">
+              <template slot-scope="scope">
+                <span>{{ parseTime(scope.row.updatedTime || scope.row.createdTime) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="150" align="center" fixed="right">
+              <template slot-scope="scope">
+                <el-button type="text" size="mini" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>
+                <el-button type="text" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="queryParams.page"
+        :limit.sync="queryParams.size"
+        @pagination="getList"
+      />
+    </div>
 
     <el-dialog :title="title" :visible.sync="open" width="760px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
@@ -252,7 +338,8 @@
 import { listSupportedProtocols } from '@/api/multiProtocol/protocol'
 import { listStationOptions } from '@/api/multiProtocol/station'
 import { addPile, delPile, getPile, listPiles, updatePile } from '@/api/multiProtocol/pile'
-import pileImage from '@/assets/multiProtocol/pile.svg'
+import { parseTime } from '@/utils/witos'
+import pileImage from '@/assets/multiProtocol/device.png'
 
 const pileTypeOptions = [
   { label: '直流', value: 'DC' },
@@ -354,6 +441,7 @@ export default {
     this.getList()
   },
   methods: {
+    parseTime,
     formatPileType(value) {
       const match = this.pileTypeOptions.find(item => item.value === value)
       return match ? match.label : value || '-'
@@ -513,27 +601,590 @@ export default {
 
 <style scoped lang="scss">
 .pile-page {
-  width: 100%; height: calc(100vh - 50px); min-height: 0; padding: 10px 12px; overflow: hidden;
-  display: flex; flex-direction: column; gap: 8px; background: #e9edf2;
+  width: 100%;
+  min-height: calc(100vh - 84px);
+  padding: 0px 15px 15px 15px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: #f6f8fa;
 }
-.pile-summary { height: 68px; flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.summary-item {
-  min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #fff; border-radius: 7px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
-  .summary-icon { width: 35px; height: 35px; flex: none; display: grid; place-items: center; border-radius: 8px; font-size: 19px; }
-  strong { display: block; color: #1f2329; font-size: 19px; line-height: 22px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  small { margin-left: 2px; color: #8a919f; font-size: 10px; font-weight: 400; }
-  p { margin: 1px 0 0; color: #8a919f; font-size: 11px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pile-summary {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 0;
 }
-.summary-primary .summary-icon { color: #1890ff; background: #e6f4ff; }.summary-success .summary-icon { color: #52c41a; background: #f6ffed; }.summary-charging .summary-icon { color: #13c2c2; background: #e6fffb; }.summary-fault .summary-icon { color: #ff4d4f; background: #fff1f0; }.summary-protocol .summary-icon { color: #722ed1; background: #f9f0ff; }
-.pile-content { min-height: 0; flex: 1; display: flex; flex-direction: column; padding: 9px 12px 4px; background: #fff; border-radius: 7px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
-.query-form { flex: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }.query-form ::v-deep .el-form-item { margin: 0; }.query-form ::v-deep .el-button { margin-left: 0; }
-.toolbar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 0 0 8px; }.view-switch { display: flex; overflow: hidden; border: 1px solid #dcdfe6; border-radius: 5px; }.view-switch button { width: 30px; height: 28px; padding: 0; border: 0; border-right: 1px solid #ebeef5; color: #8a919f; background: #fff; cursor: pointer; }.view-switch button:last-child { border-right: 0; }.view-switch button.active { color: #1890ff; background: #e8f3ff; }
-.pile-list { flex: 1; min-height: 0; overflow: hidden; }.card-grid { height: 100%; min-height: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(214px, 1fr)); grid-auto-rows: 214px; gap: 9px; align-content: start; overflow: auto; padding: 2px 0; }.empty-state { grid-column: 1 / -1; display: grid; min-height: 180px; place-items: center; color: #909399; font-size: 13px; }
-.pile-card { min-width: 0; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #ebeef5; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }.pile-image { height: clamp(86px, 38%, 144px); overflow: hidden; background: #e1edf7; }.pile-image img { display: block; width: 100%; height: 100%; object-fit: cover; }.pile-card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 10px 10px 12px; }.pile-card-head { min-width: 0; display: flex; align-items: center; gap: 5px; }.pile-card-head h3 { flex: 1; min-width: 0; margin: 0; color: #1f2329; font-size: 14px; font-weight: 600; line-height: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }.card-actions { flex: none; display: flex; gap: 4px; }.card-actions button { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 5px; cursor: pointer; }.card-actions .edit { color: #1890ff; background: #e8f3ff; }.card-actions .delete { color: #ff4d4f; background: #fff1f0; }
-.pile-code { display: flex; align-items: center; gap: 6px; min-width: 0; margin-top: 6px; color: #8a919f; font-size: 11px; line-height: 17px; }.pile-code b { min-width: 0; overflow: hidden; color: #8a919f; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }.status-tag { display: inline-flex; align-items: center; height: 22px; flex: none; padding: 0 8px; border: 1px solid; border-radius: 11px; font-size: 11px; }.status-tag.idle { color: #389e0d; background: #f6ffed; border-color: #d9f7be; }.status-tag.charging { color: #1890ff; background: #e6f4ff; border-color: #bae0ff; }.status-tag.fault { color: #cf1322; background: #fff1f0; border-color: #ffa39e; }.status-tag.offline { color: #595959; background: #f5f5f5; border-color: #d9d9d9; }
-.pile-details { margin: 10px 0 0; display: grid; gap: 7px; }.pile-details div { min-width: 0; display: flex; gap: 7px; color: #3c4043; font-size: 12px; line-height: 18px; }.pile-details dt { flex: none; color: #8a919f; }.pile-details dd { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.pile-metrics { margin-top: 16px; display: flex; gap: 18px; padding-top: 10px; border-top: 1px dashed #eceff4; }.pile-metrics div { min-width: 0; display: flex; flex-direction: column; }.pile-metrics strong { overflow: hidden; color: #1f2329; font-size: 15px; line-height: 19px; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }.pile-metrics span { margin-top: 2px; color: #8a919f; font-size: 10px; white-space: nowrap; }
-.pile-list ::v-deep .el-table { font-size: 12px; }.pile-list ::v-deep .el-table th { background: #fafbfc; color: #4a4f57; }.pile-list ::v-deep .el-table td, .pile-list ::v-deep .el-table th { padding: 7px 0; }.pile-content ::v-deep .pagination-container { min-height: 52px; margin: 0; padding: 10px 0 14px; }
-@media (max-width: 1300px) { .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 1000px) { .pile-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); height: auto; }.summary-item { min-height: 62px; }.card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.pile-page { overflow: auto; }.pile-content { min-height: 500px; } }
-@media (max-width: 640px) { .pile-page { padding: 8px; }.pile-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }.summary-item:last-child { grid-column: span 2; }.card-grid { grid-template-columns: 1fr; }.query-form ::v-deep .el-input, .query-form ::v-deep .el-select { width: calc(100vw - 40px) !important; }.toolbar { justify-content: space-between; }.pile-content { padding: 8px; } }
+
+.topItem {
+  transition: all .18s ease;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  padding: 8px 15px;
+  width: calc(100% / 5 - (15px * 4 / 5));
+  height: 112px;
+  font-size: 20px;
+  color: #666;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+
+  &:nth-child(5n) {
+    margin-right: 0;
+  }
+
+  .flex-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topItemName {
+    font-weight: 400;
+    font-size: 16px;
+    color: #666;
+    display: flex;
+    align-items: center;
+  }
+
+  .topItemImg {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      height: 18px;
+      width: auto;
+      flex-shrink: 0;
+    }
+  }
+
+  .topItemValue {
+    font-weight: 400;
+    font-size: 20px;
+    color: #131212;
+    margin-top: 20px;
+  }
+}
+
+.content-box {
+  min-height: 0;
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+.w100 {
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-start;
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.right2 {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex: none;
+}
+
+.search-form {
+  margin: 0;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  width: 30%;
+  min-width: 0;
+}
+
+.inputCss {
+  width: 100%;
+}
+
+.labelCss {
+  color: #606266;
+  font-size: 14px;
+  min-width: 85px;
+  text-align: right;
+  margin-right: 8px;
+  flex: none;
+}
+
+.m-l-20 {
+  margin-left: 20px !important;
+}
+
+.m-l-15 {
+  margin-left: 15px !important;
+}
+
+.m-l-0 {
+  margin-left: 0 !important;
+}
+
+.m-t-20 {
+  margin-top: 20px;
+}
+
+.title ::v-deep .el-select {
+  width: 100%;
+}
+
+::v-deep .custom-grey-btn {
+  border: 1px solid #e7eaef !important;
+  border-color: #e7eaef !important;
+  color: #8d8d8d !important;
+}
+
+.custom-grey-btn:hover,
+.custom-grey-btn:active,
+.custom-grey-btn:focus {
+  background: #f5f7fa !important;
+}
+
+.table-box {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.table-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex: none;
+}
+
+.table-tools-left,
+.table-tools-right {
+  display: flex;
+  align-items: center;
+}
+
+.view-switch {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+.view-switch button {
+  height: 32px;
+  min-width: 64px;
+  padding: 0 12px;
+  border: 0;
+  border-right: 1px solid #dcdfe6;
+  color: #606266;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.view-switch button:last-child {
+  border-right: 0;
+}
+
+.view-switch button.active {
+  color: #fff;
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.pile-list {
+  flex: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+.table-wrapper {
+  flex: none;
+  overflow: visible;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(360px, calc((100% - 45px) / 4)), 1fr));
+  gap: 15px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 16px;
+  color: #909399;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.pile-card {
+  background: #fff;
+  border: 1px solid #e8ecf1;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 248px;
+  transition: box-shadow .2s;
+}
+
+.pile-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+}
+
+.pile-card__side {
+  width: 120px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px 22px;
+  box-sizing: border-box;
+}
+
+.pile-card__img-wrap {
+  width: 100%;
+  height: 150px;
+  flex: none;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.pile-card__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: top center;
+  padding: 0 6px;
+  box-sizing: border-box;
+}
+
+.pile-card__status {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 1;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 4px;
+  min-width: 64px;
+  text-align: center;
+  box-sizing: border-box;
+  color: #fff;
+  background: #8B8B8B;
+}
+
+.pile-card__status.idle {
+  background: #3D7FFF;
+  color: #fff;
+}
+
+.pile-card__status.charging {
+  background: #FFC327;
+  color: #fff;
+}
+
+.pile-card__status.fault {
+  background: #FF7C52;
+  color: #fff;
+}
+
+.pile-card__status.offline {
+  background: #8B8B8B;
+  color: #fff;
+}
+
+.pile-card__status.occupied {
+  background: #FFAD66;
+  color: #fff;
+}
+
+.pile-card__status.inserted {
+  background: #F0B515;
+  color: #fff;
+}
+
+.pile-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 18px;
+}
+
+.pile-card__head {
+  margin-bottom: 16px;
+}
+
+.pile-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.pile-card__addr {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.8;
+
+  i {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.pile-card__code {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #909399;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pile-card__stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  margin: 0 0 18px;
+}
+
+.pile-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.3;
+}
+
+.pile-card__stat-label,
+.pile-card__stat-val {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.pile-card__stat-val {
+  flex-shrink: 0;
+  color: #909399;
+}
+
+.pile-card__stat--right {
+  flex: none;
+  margin-left: 0;
+}
+
+.pile-card__ops {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  min-height: 28px;
+
+  ::v-deep .el-button {
+    flex: none;
+    width: 82px;
+    height: 28px;
+    margin: 0;
+    color: #909399;
+    border-color: #dcdfe6;
+    background: #fff;
+    border-radius: 4px;
+  }
+
+  ::v-deep .el-button:hover,
+  ::v-deep .el-button:focus {
+    color: #606266;
+    border-color: #c0c4cc;
+    background: #fff;
+  }
+}
+
+.pile-list ::v-deep .el-table {
+  font-size: 13px;
+  color: #606266;
+  border: 1px solid #e6eaee !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.pile-list ::v-deep .el-table__header-wrapper {
+  border-radius: 8px 8px 0 0;
+}
+
+.pile-list ::v-deep .el-table thead {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.pile-list ::v-deep .el-table .el-table__header-wrapper th,
+.pile-list ::v-deep .el-table .el-table__fixed-header-wrapper th {
+  background-color: #f9f9f9 !important;
+  color: #333;
+  font-weight: 600;
+  height: 40px;
+  font-size: 13px;
+}
+
+.pile-list ::v-deep .el-table th.el-table__cell.is-leaf,
+.pile-list ::v-deep .el-table td.el-table__cell {
+  border-bottom: 1px solid #e6eaee !important;
+}
+
+.pile-list ::v-deep .el-table--border .el-table__cell {
+  border-right: 1px solid #e6eaee !important;
+}
+
+.pile-list ::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background-color: #f5f7fa !important;
+}
+
+.pile-list ::v-deep .el-table__body td {
+  color: #606266;
+}
+
+.table-box ::v-deep .pagination-container {
+  position: relative;
+  margin: 0 !important;
+  padding: 20px 0 0 !important;
+  height: auto !important;
+  text-align: right;
+  background: #fff;
+}
+
+.table-box ::v-deep .pagination-container .el-pagination {
+  position: static !important;
+  right: auto;
+}
+
+@media (max-width: 1200px) {
+  .flex {
+    width: 45%;
+  }
+
+  .title {
+    flex-wrap: wrap;
+    gap: 16px 0;
+  }
+
+  .m-l-20 {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .topItem {
+    width: calc(100% / 3 - (15px * 2 / 3));
+
+    &:nth-child(5n) {
+      margin-right: 15px;
+    }
+
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+
+  .w100 {
+    flex-direction: column;
+  }
+
+  .right2 {
+    margin-left: 0 !important;
+    margin-top: 16px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .pile-page {
+    padding: 8px;
+  }
+
+  .topItem {
+    width: calc(100% / 2 - (15px / 2));
+
+    &:nth-child(3n) {
+      margin-right: 15px;
+    }
+
+    &:nth-child(2n) {
+      margin-right: 0;
+    }
+  }
+
+  .content-box,
+  .table-box {
+    padding: 12px;
+  }
+
+  .flex {
+    width: 100%;
+  }
+
+  .table-tools {
+    width: 100%;
+  }
+}
 </style>

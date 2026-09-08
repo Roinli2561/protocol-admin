@@ -1,98 +1,172 @@
 <template>
   <section class="station-page">
     <div class="station-summary">
-      <article class="summary-item summary-primary">
-        <span class="summary-icon"><i class="el-icon-office-building" /></span>
-        <div><strong>{{ total }}</strong><p>站点总数</p></div>
-      </article>
-      <article class="summary-item summary-success">
-        <span class="summary-icon"><i class="el-icon-circle-check" /></span>
-        <div><strong>{{ operatingCount }}</strong><p>运营中</p></div>
-      </article>
-      <article class="summary-item summary-warning">
-        <span class="summary-icon"><i class="el-icon-warning-outline" /></span>
-        <div><strong>{{ maintenanceCount }}</strong><p>维护 / 停运</p></div>
-      </article>
-      <article class="summary-item summary-energy">
-        <span class="summary-icon"><i class="el-icon-lightning" /></span>
-        <div><strong>{{ todayEnergy }}<small>kWh</small></strong><p>今日充电量</p></div>
-      </article>
-      <article class="summary-item summary-device">
-        <span class="summary-icon"><i class="el-icon-mobile-phone" /></span>
-        <div><strong>{{ gunTotal }}<small>把</small></strong><p>接入充电枪</p></div>
-      </article>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#0C65F5">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>站点总数</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ total }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#01CB76">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>运营中</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ operatingCount }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#FB8B31">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>维护 / 停运</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ maintenanceCount }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#FDB924">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>今日充电量(kWh)</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ todayEnergy }}</div>
+      </div>
+      <div class="topItem">
+        <div class="flex-top">
+          <div class="topItemName">
+            <div class="topItemImg" style="background:#06B0F6">
+              <img src="@/assets/multiProtocol/jygl-icon.png" alt="" />
+            </div>
+            <span>接入充电枪(把)</span>
+          </div>
+        </div>
+        <div class="topItemValue">{{ gunTotal }}</div>
+      </div>
     </div>
 
-    <main class="station-content">
-      <div class="station-toolbar">
-        <el-form ref="queryForm" :model="queryParams" size="small" :inline="true" class="query-form">
-          <el-form-item>
-            <el-input v-model.trim="queryParams.stationName" placeholder="请输入充电站名称" clearable @keyup.enter.native="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model.trim="queryParams.stationCode" placeholder="请输入充电站编码" clearable @keyup.enter.native="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-select v-model="queryParams.status" placeholder="全部状态" clearable>
-              <el-option label="运营中" value="operating" />
-              <el-option label="维护中" value="maintenance" />
-              <el-option label="停运" value="stopped" />
-            </el-select>
-          </el-form-item>
-          <el-form-item class="query-actions">
-            <el-button type="primary" icon="el-icon-search" @click="handleQuery">查询</el-button>
-            <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="toolbar-actions">
-          <div class="view-switch" aria-label="视图切换">
-            <el-tooltip content="表格视图" placement="top"><button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'"><i class="el-icon-tickets" /></button></el-tooltip>
-            <el-tooltip content="卡片视图" placement="top"><button :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'"><i class="el-icon-menu" /></button></el-tooltip>
+    <div class="content-box w100">
+      <div class="left">
+        <el-form ref="queryForm" :model="queryParams" class="search-form">
+          <div class="title">
+            <div class="flex">
+              <div class="labelCss">充电站名称</div>
+              <el-input
+                class="inputCss"
+                v-model.trim="queryParams.stationName"
+                placeholder="请输入充电站名称"
+                clearable
+                @keyup.enter.native="handleQuery"
+              />
+            </div>
+            <div class="flex m-l-20">
+              <div class="labelCss">充电站编码</div>
+              <el-input
+                class="inputCss"
+                v-model.trim="queryParams.stationCode"
+                placeholder="请输入充电站编码"
+                clearable
+                @keyup.enter.native="handleQuery"
+              />
+            </div>
+            <div class="flex m-l-20">
+              <div class="labelCss">运营状态</div>
+              <el-select v-model="queryParams.status" placeholder="请选择运营状态" clearable>
+                <el-option label="运营中" value="operating" />
+                <el-option label="维护中" value="maintenance" />
+                <el-option label="停运" value="stopped" />
+              </el-select>
+            </div>
           </div>
-          <el-button type="primary" icon="el-icon-plus" @click="handleAdd">新建充电站</el-button>
+        </el-form>
+      </div>
+      <div class="right2 m-l-20">
+        <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
+        <el-button type="normal" icon="el-icon-refresh" class="custom-grey-btn m-l-15" @click="resetQuery">重置</el-button>
+      </div>
+    </div>
+
+    <div class="table-box">
+      <div class="table-tools">
+        <div class="table-tools-left">
+          <el-button class="m-l-0" type="primary" icon="el-icon-plus" @click="handleAdd">新增</el-button>
+        </div>
+        <div class="table-tools-right">
+          <div class="view-switch" aria-label="视图切换">
+            <el-tooltip content="卡片视图" placement="top">
+              <button :class="{ active: viewMode === 'card' }" @click="viewMode = 'card'"><i class="el-icon-s-grid" /> 卡片</button>
+            </el-tooltip>
+            <el-tooltip content="表格视图" placement="top">
+              <button :class="{ active: viewMode === 'table' }" @click="viewMode = 'table'"><i class="el-icon-s-operation" /> 列表</button>
+            </el-tooltip>
+          </div>
         </div>
       </div>
 
       <div v-loading="loading" class="station-list">
         <div v-if="viewMode === 'card'" class="card-grid">
           <article v-for="(station, index) in cardStations" :key="station.id || station.stationCode || index" class="station-card">
-            <div class="station-image"><img :src="stationImage" alt="充电站" /></div>
-            <div class="station-card-body">
-              <div class="station-card-head">
-                <h3 :title="station.stationName">{{ station.stationName || '未命名充电站' }}</h3>
-                <div class="card-actions">
-                  <el-tooltip content="编辑" placement="top"><button class="edit" @click="handleUpdate(station)"><i class="el-icon-edit" /></button></el-tooltip>
-                  <el-tooltip content="删除" placement="top"><button class="delete" @click="handleDelete(station)"><i class="el-icon-delete" /></button></el-tooltip>
+            <div class="station-card__img-wrap">
+              <img :src="stationImage" class="station-card__img" alt="充电站" />
+              <span class="station-card__status" :class="station.status.type">{{ station.status.label }}</span>
+            </div>
+            <div class="station-card__content">
+              <div class="station-card__head">
+                <div class="station-card__name" :title="station.stationName">{{ station.stationName || '未命名充电站' }}</div>
+                <div class="station-card__addr">
+                  <i class="el-icon-location-outline" />
+                  <span :title="(station.region || '') + (station.address || '')">{{ station.region }}{{ station.address || '未设置地址' }}</span>
+                </div>
+                <div class="station-card__code">编码：{{ station.stationCode || '-' }}</div>
+              </div>
+              <div class="station-card__stats">
+                <div class="station-card__stat">
+                  <span class="station-card__stat-label">充电桩:</span>
+                  <span class="station-card__stat-val">{{ station.pileCount }}</span>
+                </div>
+                <div class="station-card__stat station-card__stat--energy">
+                  <span class="station-card__stat-label">今日充电量:</span>
+                  <span class="station-card__stat-val">{{ station.energy }} kWh</span>
                 </div>
               </div>
-              <div class="station-code"><span :class="['status-dot', station.status.type]" />{{ station.status.label }}<b>{{ station.stationCode || '-' }}</b></div>
-              <dl class="station-details">
-                <div><dt>所在地区</dt><dd :title="station.region">{{ station.region }}</dd></div>
-                <div><dt>详细地址</dt><dd :title="station.address">{{ station.address || '-' }}</dd></div>
-              </dl>
-              <div class="station-metrics">
-                <div><strong>{{ station.pileCount }}</strong><span>充电桩</span></div>
-                <div><strong>{{ station.energy }}</strong><span>今日充电量(kWh)</span></div>
+              <div class="station-card__ops">
+                <el-button size="mini" plain @click="handleUpdate(station)">编辑</el-button>
+                <el-button size="mini" plain @click="handleDelete(station)">删除</el-button>
               </div>
             </div>
           </article>
-          <div v-if="!loading && !cardStations.length" class="empty-state">暂无充电站数据</div>
+          <div v-if="!loading && !cardStations.length" class="empty-state"><p>暂无充电站数据</p></div>
         </div>
 
-        <el-table v-else :data="tableData" border height="100%">
-          <el-table-column label="序号" width="70" align="center"><template slot-scope="scope">{{ (queryParams.page - 1) * queryParams.size + scope.$index + 1 }}</template></el-table-column>
-          <el-table-column label="充电站名称" prop="stationName" min-width="180" show-overflow-tooltip />
-          <el-table-column label="充电站编码" prop="stationCode" min-width="160" show-overflow-tooltip />
-          <el-table-column label="所在地区" min-width="180" show-overflow-tooltip><template slot-scope="scope">{{ formatRegion(scope.row) }}</template></el-table-column>
-          <el-table-column label="详细地址" prop="address" min-width="220" show-overflow-tooltip />
-          <el-table-column label="经纬度" min-width="180"><template slot-scope="scope">{{ formatCoordinate(scope.row) }}</template></el-table-column>
-          <el-table-column label="创建时间" prop="createdTime" width="170" align="center"><template slot-scope="scope">{{ parseTime(scope.row.createdTime) }}</template></el-table-column>
-          <el-table-column label="操作" width="145" align="center" fixed="right"><template slot-scope="scope"><el-button type="text" size="mini" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button><el-button type="text" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button></template></el-table-column>
-        </el-table>
+        <div v-else class="table-wrapper">
+          <el-table :data="tableData" border>
+            <el-table-column label="序号" width="70" align="center"><template slot-scope="scope">{{ (queryParams.page - 1) * queryParams.size + scope.$index + 1 }}</template></el-table-column>
+            <el-table-column label="充电站名称" prop="stationName" min-width="180" show-overflow-tooltip />
+            <el-table-column label="充电站编码" prop="stationCode" min-width="160" show-overflow-tooltip />
+            <el-table-column label="所在地区" min-width="180" show-overflow-tooltip><template slot-scope="scope">{{ formatRegion(scope.row) }}</template></el-table-column>
+            <el-table-column label="详细地址" prop="address" min-width="220" show-overflow-tooltip />
+            <el-table-column label="经纬度" min-width="180"><template slot-scope="scope">{{ formatCoordinate(scope.row) }}</template></el-table-column>
+            <el-table-column label="创建时间" prop="createdTime" width="170" align="center"><template slot-scope="scope">{{ parseTime(scope.row.createdTime) }}</template></el-table-column>
+            <el-table-column label="操作" width="145" align="center" fixed="right"><template slot-scope="scope"><el-button type="text" size="mini" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button><el-button type="text" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button></template></el-table-column>
+          </el-table>
+        </div>
       </div>
 
       <pagination v-show="total > 0" :total="total" :page.sync="queryParams.page" :limit.sync="queryParams.size" @pagination="getList" />
-    </main>
+    </div>
 
     <el-dialog :title="title" :visible.sync="open" width="720px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
@@ -158,7 +232,7 @@ import { addStation, delStation, getStation, listStations, updateStation } from 
 import { listPiles } from '@/api/multiProtocol/pile'
 import { listGuns } from '@/api/multiProtocol/gun'
 import { parseTime } from '@/utils/witos'
-import stationImage from '@/assets/multiProtocol/station.svg'
+import stationImage from '@/assets/multiProtocol/station.png'
 
 export default {
   name: 'StationCrud',
@@ -360,81 +434,537 @@ export default {
 <style scoped lang="scss">
 .station-page {
   width: 100%;
-  height: calc(100vh - 50px);
-  min-height: 0;
-  padding: 10px 12px;
-  overflow: hidden;
+  min-height: calc(100vh - 84px);
+  padding: 0px 15px 15px 15px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background: #e9edf2;
+  box-sizing: border-box;
+  background: #f6f8fa;
 }
 
 .station-summary {
-  height: 68px;
-  flex: none;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 0;
 }
 
-.summary-item {
+.topItem {
+  transition: all .18s ease;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  padding: 8px 15px;
+  width: calc(100% / 5 - (15px * 4 / 5));
+  height: 112px;
+  font-size: 20px;
+  color: #666;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+
+  &:nth-child(5n) {
+    margin-right: 0;
+  }
+
+  .flex-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topItemName {
+    font-weight: 400;
+    font-size: 16px;
+    color: #666;
+    display: flex;
+    align-items: center;
+  }
+
+  .topItemImg {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    img {
+      height: 18px;
+      width: auto;
+      flex-shrink: 0;
+    }
+  }
+
+  .topItemValue {
+    font-weight: 400;
+    font-size: 20px;
+    color: #131212;
+    margin-top: 20px;
+  }
+}
+
+.content-box {
+  min-height: 0;
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+.w100 {
+  width: 100% !important;
+  display: flex !important;
+  align-items: flex-start;
+}
+
+.left {
+  flex: 1;
   min-width: 0;
+}
+
+.right2 {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex: none;
+}
+
+.search-form {
+  margin: 0;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: #fff;
-  border-radius: 7px;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
-  .summary-icon { width: 35px; height: 35px; flex: none; display: grid; place-items: center; border-radius: 8px; font-size: 19px; }
-  strong { display: block; color: #1f2329; font-size: 19px; line-height: 22px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  small { margin-left: 2px; color: #8a919f; font-size: 10px; font-weight: 400; }
-  p { margin: 1px 0 0; color: #8a919f; font-size: 11px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  width: 30%;
+  min-width: 0;
 }
-.summary-primary .summary-icon { color: #1890ff; background: #e6f4ff; }
-.summary-success .summary-icon { color: #52c41a; background: #f6ffed; }
-.summary-warning .summary-icon, .summary-energy .summary-icon { color: #fa8c16; background: #fff7e6; }
-.summary-device .summary-icon { color: #13c2c2; background: #e6fffb; }
 
-.station-content { min-height: 0; flex: 1; display: flex; flex-direction: column; padding: 9px 12px 4px; background: #fff; border-radius: 7px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
-.station-toolbar { flex: none; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 8px; }
-.query-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
-.query-form ::v-deep .el-form-item { margin: 0; }
-.query-form ::v-deep .el-input { width: 180px; }
-.query-form ::v-deep .el-select { width: 120px; }
-.query-actions { white-space: nowrap; }
-.toolbar-actions { display: flex; align-items: center; gap: 10px; flex: none; }
-.view-switch { display: flex; overflow: hidden; border: 1px solid #dcdfe6; border-radius: 5px; }
-.view-switch button { width: 30px; height: 28px; padding: 0; border: 0; border-right: 1px solid #ebeef5; color: #8a919f; background: #fff; cursor: pointer; }
-.view-switch button:last-child { border-right: 0; }
-.view-switch button.active { color: #1890ff; background: #e8f3ff; }
-.station-list { flex: 1; min-height: 0; overflow: hidden; }
-.card-grid { height: 100%; min-height: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(214px, 1fr)); grid-auto-rows: 214px; gap: 9px; align-content: start; overflow: auto; padding: 2px 0; }
-.empty-state { grid-column: 1 / -1; display: grid; min-height: 180px; place-items: center; color: #909399; font-size: 13px; }
-.station-card { min-width: 0; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #ebeef5; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }
-.station-image { height: clamp(86px, 38%, 144px); overflow: hidden; background: #e1edf7; }
-.station-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.station-card-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 10px 10px 12px; }
-.station-card-head { min-width: 0; display: flex; align-items: center; gap: 5px; }
-.station-card-head h3 { flex: 1; min-width: 0; margin: 0; color: #1f2329; font-size: 14px; font-weight: 600; line-height: 22px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-actions { flex: none; display: flex; gap: 4px; }
-.card-actions button { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 5px; cursor: pointer; }
-.card-actions .edit { color: #1890ff; background: #e8f3ff; }
-.card-actions .delete { color: #ff4d4f; background: #fff1f0; }
-.station-code { display: flex; align-items: center; gap: 5px; min-width: 0; margin-top: 6px; color: #389e0d; font-size: 11px; line-height: 17px; }
-.station-code b { min-width: 0; margin-left: 2px; overflow: hidden; color: #8a919f; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
-.status-dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: #52c41a; }
-.status-dot.warning { background: #fa8c16; }.status-dot.stopped { background: #ff4d4f; }
-.station-details { margin: 10px 0 0; display: grid; gap: 7px; }
-.station-details div { min-width: 0; display: flex; gap: 7px; color: #3c4043; font-size: 12px; line-height: 18px; }
-.station-details dt { flex: none; color: #8a919f; }.station-details dd { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.station-metrics { margin-top: 16px; display: flex; gap: 18px; padding-top: 10px; border-top: 1px dashed #eceff4; }
-.station-metrics div { min-width: 0; display: flex; flex-direction: column; }.station-metrics strong { color: #1f2329; font-size: 15px; line-height: 19px; font-variant-numeric: tabular-nums; }.station-metrics span { margin-top: 2px; color: #8a919f; font-size: 10px; white-space: nowrap; }
-.station-list ::v-deep .el-table { font-size: 12px; }.station-list ::v-deep .el-table th { background: #fafbfc; color: #4a4f57; }.station-list ::v-deep .el-table td, .station-list ::v-deep .el-table th { padding: 7px 0; }
-.station-content ::v-deep .pagination-container { min-height: 52px; margin: 0; padding: 10px 0 14px; }
+.inputCss {
+  width: 100%;
+}
 
-@media (max-width: 1300px) { .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 1000px) { .station-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); height: auto; }.summary-item { min-height: 62px; }.card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.station-page { overflow: auto; }.station-content { min-height: 500px; }.station-toolbar { align-items: flex-start; flex-direction: column; }.toolbar-actions { align-self: flex-end; } }
-@media (max-width: 640px) { .station-page { padding: 8px; }.station-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }.summary-item:last-child { grid-column: span 2; }.card-grid { grid-template-columns: 1fr; }.query-form ::v-deep .el-input, .query-form ::v-deep .el-select { width: calc(100vw - 40px); }.toolbar-actions { width: 100%; justify-content: space-between; }.station-content { padding: 8px; } }
+.labelCss {
+  color: #606266;
+  font-size: 14px;
+  min-width: 85px;
+  text-align: right;
+  margin-right: 8px;
+  flex: none;
+}
+
+.m-l-20 {
+  margin-left: 20px !important;
+}
+
+.m-l-15 {
+  margin-left: 15px !important;
+}
+
+.m-l-0 {
+  margin-left: 0 !important;
+}
+
+.title ::v-deep .el-select {
+  width: 100%;
+}
+
+::v-deep .custom-grey-btn {
+  border: 1px solid #e7eaef !important;
+  border-color: #e7eaef !important;
+  color: #8d8d8d !important;
+}
+
+.custom-grey-btn:hover,
+.custom-grey-btn:active,
+.custom-grey-btn:focus {
+  background: #f5f7fa !important;
+}
+
+.table-box {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.table-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex: none;
+}
+
+.table-tools-left,
+.table-tools-right {
+  display: flex;
+  align-items: center;
+}
+
+.view-switch {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+.view-switch button {
+  height: 32px;
+  min-width: 64px;
+  padding: 0 12px;
+  border: 0;
+  border-right: 1px solid #dcdfe6;
+  color: #606266;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.view-switch button:last-child {
+  border-right: 0;
+}
+
+.view-switch button.active {
+  color: #fff;
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.station-list {
+  flex: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+.table-wrapper {
+  flex: none;
+  overflow: visible;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(287px, calc((100% - 60px) / 5)), 1fr));
+  gap: 15px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 16px;
+  color: #909399;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.station-card {
+  background: #fff;
+  border: 1px solid #e8ecf1;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: box-shadow .2s;
+}
+
+.station-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+}
+
+.station-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.station-card__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.station-card__status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: 8px;
+  min-width: 52px;
+  text-align: center;
+  color: #fff;
+  background: #999;
+}
+
+.station-card__status.operating { background: #1890ff; }
+.station-card__status.warning { background: #e6a23c; }
+.station-card__status.stopped { background: #999; }
+
+.station-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 14px;
+}
+
+.station-card__head {
+  margin-bottom: 12px;
+}
+
+.station-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.station-card__addr {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #909399;
+  line-height: 2;
+
+  i {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.station-card__code {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #909399;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.station-card__stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #ebeef5;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 12px;
+}
+
+.station-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.3;
+}
+
+.station-card__stat-label,
+.station-card__stat-val {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.station-card__stat-val {
+  flex-shrink: 0;
+  color: #909399;
+}
+
+.station-card__stat--energy {
+  flex: none;
+  margin-left: auto;
+}
+
+.station-card__ops {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+
+  ::v-deep .el-button {
+    flex: none;
+    width: 82px;
+    margin: 0;
+    color: #909399;
+    border-color: #dcdfe6;
+    background: #fff;
+    border-radius: 4px;
+  }
+
+  ::v-deep .el-button:hover,
+  ::v-deep .el-button:focus {
+    color: #606266;
+    border-color: #c0c4cc;
+    background: #fff;
+  }
+}
+
+.station-list ::v-deep .el-table {
+  font-size: 13px;
+  color: #606266;
+  border: 1px solid #e6eaee !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.station-list ::v-deep .el-table__header-wrapper {
+  border-radius: 8px 8px 0 0;
+}
+
+.station-list ::v-deep .el-table thead {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.station-list ::v-deep .el-table .el-table__header-wrapper th,
+.station-list ::v-deep .el-table .el-table__fixed-header-wrapper th {
+  background-color: #f9f9f9 !important;
+  color: #333;
+  font-weight: 600;
+  height: 40px;
+  font-size: 13px;
+}
+
+.station-list ::v-deep .el-table th.el-table__cell.is-leaf,
+.station-list ::v-deep .el-table td.el-table__cell {
+  border-bottom: 1px solid #e6eaee !important;
+}
+
+.station-list ::v-deep .el-table--border .el-table__cell {
+  border-right: 1px solid #e6eaee !important;
+}
+
+.station-list ::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background-color: #f5f7fa !important;
+}
+
+.station-list ::v-deep .el-table__body td {
+  color: #606266;
+}
+
+.table-box ::v-deep .pagination-container {
+  position: relative;
+  margin: 0 !important;
+  padding: 20px 0 0 !important;
+  height: auto !important;
+  text-align: right;
+  background: #fff;
+}
+
+.table-box ::v-deep .pagination-container .el-pagination {
+  position: static !important;
+  right: auto;
+}
+
+@media (max-width: 1200px) {
+  .flex {
+    width: 45%;
+  }
+
+  .title {
+    flex-wrap: wrap;
+    gap: 16px 0;
+  }
+
+  .m-l-20 {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .topItem {
+    width: calc(100% / 3 - (15px * 2 / 3));
+
+    &:nth-child(5n) {
+      margin-right: 15px;
+    }
+
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+
+  .w100 {
+    flex-direction: column;
+  }
+
+  .right2 {
+    margin-left: 0 !important;
+    margin-top: 16px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .station-page {
+    padding: 8px;
+  }
+
+  .topItem {
+    width: calc(100% / 2 - (15px / 2));
+
+    &:nth-child(3n) {
+      margin-right: 15px;
+    }
+
+    &:nth-child(2n) {
+      margin-right: 0;
+    }
+  }
+
+  .content-box,
+  .table-box {
+    padding: 12px;
+  }
+
+  .flex {
+    width: 100%;
+  }
+
+  .table-tools {
+    width: 100%;
+  }
+}
 </style>

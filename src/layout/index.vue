@@ -3,11 +3,10 @@
       <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
       <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
       <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
-        <el-scrollbar>
-          <div :class="{'fixed-header':fixedHeader}">
-            <navbar/>
-<!--            <tags-view v-if="needTagsView"/>-->
-          </div>
+        <div class="layout-header">
+          <navbar/>
+        </div>
+        <el-scrollbar class="main-scrollbar">
           <app-main/>
           <right-panel>
             <settings/>
@@ -41,8 +40,7 @@ export default {
       sideTheme: state => state.settings.sideTheme,
       sidebar: state => state.app.sidebar,
       device: state => state.app.device,
-
-      fixedHeader: state => state.settings.fixedHeader
+      needTagsView: state => state.settings.tagsView
     }),
     classObj() {
       return {
@@ -74,21 +72,51 @@ export default {
     height: 100%;
     width: 100%;
 
-    .el-scrollbar{
-      height: 100%;
+    &.mobile.openSidebar {
+      position: fixed;
+      top: 0;
     }
+  }
+
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f6f8fa;
+  }
+
+  .layout-header {
+    flex: none;
+    position: relative;
+    z-index: 9;
+    background: #fff;
+  }
+
+  .main-scrollbar {
+    flex: 1;
+    min-height: 0;
+    height: auto !important;
+    background: #f6f8fa;
 
     ::v-deep .el-scrollbar__bar.is-vertical {
       z-index: 10;
     }
 
-    ::v-deep .el-scrollbar__wrap {
-      overflow-x: hidden;
+    ::v-deep .el-scrollbar__bar.is-horizontal {
+      display: none !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
 
-    &.mobile.openSidebar {
-      position: fixed;
-      top: 0;
+    ::v-deep .el-scrollbar__wrap {
+      overflow-x: hidden !important;
+      background: #f6f8fa;
+    }
+
+    ::v-deep .el-scrollbar__view {
+      min-height: 100%;
+      background: #f6f8fa;
     }
   }
 
@@ -101,25 +129,12 @@ export default {
     position: absolute;
     z-index: 999;
   }
+</style>
 
-  .fixed-header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9;
-    width: calc(100% - #{$base-sidebar-width});
-    transition: width 0.28s;
-  }
-
-  .hideSidebar .fixed-header {
-    width: calc(100% - 54px);
-  }
-
-  .sidebarHide .fixed-header {
-    width: calc(100%);
-  }
-
-  .mobile .fixed-header {
-    width: 100%;
-  }
+<style lang="scss">
+/* 全局隐藏主内容区横向滚动条，避免底部白条 */
+.main-scrollbar > .el-scrollbar__bar.is-horizontal {
+  display: none !important;
+  height: 0 !important;
+}
 </style>
