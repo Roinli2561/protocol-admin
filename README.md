@@ -26,7 +26,7 @@
     </a>
 </div>
 <p align="center">
-  <a href="http://platform.protocol.huizhidata.com">在线体验</a> | <a href="http://doc.protocol.huizhidata.com">帮助文档</a> | <a href="https://github.com/Roinli2561/protocol-admin">源码下载</a>
+  <a href="http://platform.protocol.huizhidata.com">在线体验</a> | <a href="http://doc-protocol.huizhidata.com">帮助文档</a> | <a href="https://github.com/Roinli2561/protocol-admin">源码下载</a>
 </p>
 <p align="center">
   如果对您有帮助，您可以点右上角 "Star" ❤ 支持一下谢谢！
@@ -175,7 +175,7 @@ VUE_APP_MP_API 为多协议模块接口前缀（默认 /mp-api），VUE_APP_TITL
 ## 📚 项目资料
 
 ### 资料支持
-- 使用文档：http://doc.protocol.huizhidata.com/
+- 使用文档：http://doc-protocol.huizhidata.com/
 - 接口文档：部署配套后端后在线查看 Swagger 接口文档
 - 配套后端：[Roinli2561/protocol-cloud](https://github.com/Roinli2561/protocol-cloud)（Spring Cloud Alibaba 微服务，含多协议模块）
 - 顶部导航内置帮助文档、博客与 GitHub 源码入口
